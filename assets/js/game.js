@@ -1,134 +1,71 @@
-class Robot {
-  constructor(name, health, attack) {
-    this._data = {
-      name: name,
-      health: health,
-      attack: attack
-    };
-  }
+// var playerName = 'Clank McKrank';
+var playerName = window.prompt("What is your robot's name?");
+var playerHealth = 100;
+var playerAttack = 10;
+var playerMoney = 10;
 
-  get name() {
-    return this._data.name;
-  }
+// You can also log multiple values at once like this
+console.log(playerName, playerAttack, playerHealth);
 
-  set name(name) {
-    if(!this._data.name) {
-      this._data.name = name;
+var enemyName = "Roborto";
+var enemyHealth = 50;
+var enemyAttack = 12;
+
+// fight function
+var fight = function() {
+  // Alert players that they are starting the round
+  window.alert("Welcome to Robot Gladiators!");
+
+  // ask player if they'd like to fight or run
+  var promptFight = window.prompt('Would you like to FIGHT or SKIP this battle? Enter "FIGHT" or "SKIP" to choose.');
+
+  // if player choses to fight, fight
+  if (promptFight === "fight" || promptFight === "FIGHT") {
+    // remove enemy's health by subtracting the amount set in the playerAttack variable
+    enemyHealth = enemyHealth - playerAttack;
+    console.log(
+      playerName + " attacked " + enemyName + ". " + enemyName + " now has " + enemyHealth + " health remaining."
+    );
+
+    // check enemy's health
+    if (enemyHealth <= 0) {
+      window.alert(enemyName + " has died!");
     } else {
-      console.log('Robot\'s name may only be set once.')
+      window.alert(enemyName + " still has " + enemyHealth + " health left.");
     }
-  }
-  
-  get health() {
-    return this._data.health;
-  }
-  set health(health) {
-    health = health >= 0 ? health : 0;
-    const isZero = health === 0;
-    this._data.health = health;
-    if(isZero) {
-      console.log(`${this.name} has died!`);
+
+    // remove players's health by subtracting the amount set in the enemyAttack variable
+    playerHealth = playerHealth - enemyAttack;
+    console.log(
+      enemyName + " attacked " + playerName + ". " + playerName + " now has " + playerHealth + " health remaining."
+    );
+
+    // check player's health
+    if (playerHealth <= 0) {
+      window.alert(playerName + " has died!");
     } else {
-      console.log(`${this.name} has ${this.health} left`);
+      window.alert(playerName + " still has " + playerHealth + " health left.");
     }
-  }
+    // if player choses to skip
+  } else if (promptFight === "skip" || promptFight === "SKIP") {
+    // confirm player wants to skip
+    var confirmSkip = window.confirm("Are you sure you'd like to quit?");
 
-  get isAlive() {
-    return this._data.health >= 1 ? true : false;
-  }
-
-  get attack() {
-    return this._data.attack
-  }
-  set attack(attack) {
-    this._data.attack = attack >= 0 ? attack : 0;
-  }
-
-  aliveCheck(anotherRobot) {
-    if(!this.isAlive) {
-      console.log(`${this.name} is dead, so they cannot perform that action.`);
-      return false;
-    } else if(!anotherRobot.isAlive) {
-      console.log(`${anotherRobot.name} is dead, so ${this.name} cannot do that to them.`);
-      return false;
+    // if yes (true), leave fight
+    if (confirmSkip) {
+      window.alert(playerName + " has decided to skip this fight. Goodbye!");
+      // subtract money from playerMoney for skipping
+      playerMoney = playerMoney - 2;
     }
-
-    return true;
-  }
-
-  damage(amount) {
-    this.health -= amount;
-  }
-}
-
-class Game {
-  constructor(player, enemy) {
-    this.player = player;
-    this.playerMoney = 10;
-    this.enemy = enemy;
-
-    showText(_WELCOME_ALERT_);
-  };
-
-  start() {
-    if(this.startRound()) {
-
+    // if no (false), ask question again by running fight() again
+    else {
+      fight();
     }
+    // if player did not chose 1 or 2 in prompt
+  } else {
+    window.alert("You need to pick a valid option. Try again!");
   }
+};
 
-  robotStats(robotNumber, robot, extra = '') {
-    const arr = [
-      `ROBOT ${robotNumber}`,
-      `NAME: ${robot.name}`,
-      `HEALTH: ${robot.health}`
-    ]
-    if(extra) arr.push(extra);
-    return arr.join('\n');
-  }
-
-  displayStatus() {
-    const robot1 = this.robotStats(1, this.player, `MONEY: ${this.playerMoney}`);
-    const robot2 = this.robotStats(2, this.enemy);
-    return `${robot1}\n\n${robot2}`;
-  }
-
-  startRound() {
-    showText(this.displayStatus());
-    this.fight();
-    showText(this.displayStatus());
-  }
-
-  attack(robot1, robot2) {
-    showText(`${robot1.name} hits ${robot2.name} for ${robot1.attack}`);
-    robot2.damage(robot1.attack);
-  }
-  
-  fight() {
-    this.attack(this.player, this.enemy);
-    this.attack(this.enemy, this.player);
-  }
-}
-
-const _PLAYER_NAME_PROMPT_ = 'What is your robot\'s name?';
-const _WELCOME_ALERT_ = 'Welcome to Robot Gladiator!';
-
-const _DEV_MODE_ = true;
-
-const playerName = promptText(_PLAYER_NAME_PROMPT_, 'Jon');
-const player = new Robot(playerName, 100, 10);
-const enemy = new Robot('Roberto', 50, 12);
-const game = new Game(player, enemy);
-
-function showText(msg) {
-  !_DEV_MODE_ ? window.alert(msg) : console.log(msg);
-}
-
-function promptText(msg, _default = 'null') {
-  return !_DEV_MODE_ ? window.prompt(msg) : _default; 
-}
-
-function boolText(msg, _default = false) {
-  return !_DEV_MODE_ ? window.confirm(msg) : _default;
-}
-
-game.start();
+// run fight function to start game
+fight();
