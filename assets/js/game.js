@@ -1,9 +1,3 @@
-/**
- * A class to avoid performing DRY.
- * @public {string} name Robot's name. Can only be set once. 
- * @public {number} health Robot's remaining health.
- * @public {number} attack Robot's attack power.
- */
 class Robot {
   constructor(name, health, attack) {
     this._data = {
@@ -62,24 +56,79 @@ class Robot {
     return true;
   }
 
-  hit(anotherRobot) {
-    if(!this.aliveCheck(anotherRobot)) {
-      return;
-    }
-    anotherRobot.health = anotherRobot.health - this.attack;
+  damage(amount) {
+    this.health -= amount;
   }
 }
 
-const player = new Robot('Jon', 100, 10);
-const enemy = new Robot('Roberto', 50, 12);
+class Game {
+  constructor(player, enemy) {
+    this.player = player;
+    this.playerMoney = 10;
+    this.enemy = enemy;
 
-function fight() {
-  console.log('Welcome to Robot Gladiators!');
-  player.hit(enemy)
-  player.hit(enemy)
-  player.hit(enemy)
-  player.hit(enemy)
-  player.hit(enemy)
+    showText(_WELCOME_ALERT_);
+  };
+
+  start() {
+    if(this.startRound()) {
+
+    }
+  }
+
+  robotStats(robotNumber, robot, extra = '') {
+    const arr = [
+      `ROBOT ${robotNumber}`,
+      `NAME: ${robot.name}`,
+      `HEALTH: ${robot.health}`
+    ]
+    if(extra) arr.push(extra);
+    return arr.join('\n');
+  }
+
+  displayStatus() {
+    const robot1 = this.robotStats(1, this.player, `MONEY: ${this.playerMoney}`);
+    const robot2 = this.robotStats(2, this.enemy);
+    return `${robot1}\n\n${robot2}`;
+  }
+
+  startRound() {
+    showText(this.displayStatus());
+    this.fight();
+    showText(this.displayStatus());
+  }
+
+  attack(robot1, robot2) {
+    showText(`${robot1.name} hits ${robot2.name} for ${robot1.attack}`);
+    robot2.damage(robot1.attack);
+  }
+  
+  fight() {
+    this.attack(this.player, this.enemy);
+    this.attack(this.enemy, this.player);
+  }
 }
 
-fight();
+const _PLAYER_NAME_PROMPT_ = 'What is your robot\'s name?';
+const _WELCOME_ALERT_ = 'Welcome to Robot Gladiator!';
+
+const _DEV_MODE_ = true;
+
+const playerName = promptText(_PLAYER_NAME_PROMPT_, 'Jon');
+const player = new Robot(playerName, 100, 10);
+const enemy = new Robot('Roberto', 50, 12);
+const game = new Game(player, enemy);
+
+function showText(msg) {
+  !_DEV_MODE_ ? window.alert(msg) : console.log(msg);
+}
+
+function promptText(msg, _default = 'null') {
+  return !_DEV_MODE_ ? window.prompt(msg) : _default; 
+}
+
+function boolText(msg, _default = false) {
+  return !_DEV_MODE_ ? window.confirm(msg) : _default;
+}
+
+game.start();
