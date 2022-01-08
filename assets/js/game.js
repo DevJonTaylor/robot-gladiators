@@ -66,7 +66,12 @@ var fight = function(enemyName) {
 };
 
 // run fight function to start game
-for (var i = 0; i < enemyNames.length; i++) { 
+for (var i = 0; i < enemyNames.length; i++) {
+  if(playerHealth > 0) {
+    alert(`Welcome to Robot Gladiator!  Round ${i+1}`);
+  } 
+
   enemyHealth = 50;
+  
   fight(enemyNames[i]);
 }
